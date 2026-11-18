@@ -1,0 +1,6 @@
+{
+  "name": "Roll a die",
+  "recipe": [
+    { "action": "random_int", "values": [1, 6] }
+  ]
+}

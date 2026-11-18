@@ -1,0 +1,29 @@
+{
+    "name": "Count this page view",
+    "parameters": {},
+    "start": "n2",
+    "nodes": {
+        "n2": {
+            "action": "storage_increment",
+            "values": [
+                "page_views"
+            ],
+            "result": "total",
+            "ui": {
+                "x": 290,
+                "y": -88
+            }
+        }
+    },
+    "result": "$total",
+    "ui": {
+        "input": {
+            "x": 0,
+            "y": -54
+        },
+        "output": {
+            "x": 590,
+            "y": -72
+        }
+    }
+}

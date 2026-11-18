@@ -1,0 +1,8 @@
+{
+  "name": "Add 19% tax",
+  "parameters": { "net": "numeric[0..1000000]" },
+  "recipe": [
+    { "action": "multiply", "values": ["$net", 1.19] },
+    { "action": "format", "format": "%(.2f) €", "values": ["$0"] }
+  ]
+}

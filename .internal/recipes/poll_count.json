@@ -1,0 +1,10 @@
+{
+  "name": "Read the votes for one poll option",
+  "parameters": { "option": "string[before_send|on_click|while_typing]" },
+  "start": "read",
+  "nodes": {
+    "key": { "action": "format", "format": "poll_%(option)", "result": "poll_key" },
+    "read": { "action": "storage_get", "values": ["$poll_key"], "default": 0, "result": "votes" }
+  },
+  "result": "$votes"
+}

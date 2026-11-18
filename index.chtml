@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NebuliHost Dynamic Page Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=DM+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --butter: #F7D046;
+      --ink: #1C2A6B;
+      --paper: #FFFBEA;
+      --pink: #D6245F;
+      --sans: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+      --mono: "DM Mono", Consolas, Menlo, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 400 1.125rem/1.5 var(--sans);
+    }
+
+    .wrap {
+      max-width: 68rem;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    h1, h2, p { margin: 0; }
+
+    :focus-visible {
+      outline: 3px solid var(--pink);
+      outline-offset: 2px;
+    }
+
+    /* Hero */
+    .hero { background: var(--butter); }
+
+    .hero .wrap {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 3rem;
+      padding-top: 4.5rem;
+      padding-bottom: 4.5rem;
+    }
+
+    h1 {
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 800;
+      line-height: 0.98;
+      letter-spacing: -0.03em;
+    }
+
+    .hero p {
+      max-width: 34rem;
+      margin-top: 1.5rem;
+      font-size: 1.25rem;
+    }
+
+    .die {
+      display: grid;
+      place-items: center;
+      width: clamp(10rem, 24vw, 18rem);
+      aspect-ratio: 1;
+      border-radius: 22%;
+      background: var(--pink);
+      color: var(--paper);
+      font-size: clamp(7rem, 17vw, 13rem);
+      font-weight: 800;
+      line-height: 1;
+      transform: rotate(-7deg);
+      box-shadow: 0.75rem 0.75rem 0 var(--ink);
+    }
+
+    button {
+      padding: 0.7rem 1.25rem;
+      border: 0;
+      border-radius: 0.4rem;
+      background: var(--ink);
+      color: var(--paper);
+      font: 600 1.0625rem var(--sans);
+      cursor: pointer;
+    }
+
+    button:hover { background: var(--pink); }
+
+    .hero button { margin-top: 2rem; }
+
+    /* Demo bands */
+    .demo { padding: 4rem 0; }
+    .demo + .demo { border-top: 2px solid var(--ink); }
+
+    .demo .wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem 3.5rem;
+      align-items: start;
+    }
+
+    .intro { grid-column: 1 / -1; max-width: 42rem; }
+
+    h2 {
+      font-size: clamp(1.9rem, 4vw, 2.75rem);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+
+    pre {
+      margin: 0;
+      padding: 1.25rem;
+      overflow-x: auto;
+      border-radius: 0.4rem;
+      background: var(--ink);
+      color: var(--butter);
+      font: 400 0.9375rem/1.6 var(--mono);
+    }
+
+    code { font-family: var(--mono); font-size: 0.9em; }
+
+    /* Rendered prices: each source tag sits beside its output */
+    table { width: 100%; border-collapse: collapse; }
+
+    th, td {
+      padding: 0.8rem 0;
+      border-bottom: 1px solid var(--ink);
+      text-align: left;
+    }
+
+    th { font-weight: 600; }
+    td { font-size: 1.5rem; font-weight: 800; text-align: right; white-space: nowrap; }
+
+    /* Interactive results */
+    label { display: block; font-weight: 600; margin-bottom: 0.4rem; }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.65rem 0.8rem;
+      border: 2px solid var(--ink);
+      border-radius: 0.4rem;
+      background: #fff;
+      color: var(--ink);
+      font: 400 1.125rem/1.4 var(--sans);
+    }
+
+    textarea { resize: vertical; }
+
+    .field-row { display: flex; gap: 0.75rem; }
+    .field-row input { flex: 1; min-width: 0; }
+
+    .answer {
+      margin-top: 1.25rem;
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.1;
+      overflow-wrap: anywhere;
+    }
+
+    .answer.is-error { font-size: 1.125rem; font-weight: 600; color: var(--pink); }
+
+    .hint { margin-top: 0.5rem; font-size: 1rem; }
+
+    dl { margin: 1.25rem 0 0; }
+    dt { font-weight: 600; margin-top: 0.85rem; }
+    dd { margin: 0; overflow-wrap: anywhere; }
+    #fingerprint { font-family: var(--mono); font-size: 0.9375rem; }
+
+    /* Storage */
+    #views { margin-top: 0; font-size: 4rem; }
+    .hint + h3 { margin: 2.25rem 0 0.5rem; font-size: 1.375rem; font-weight: 800; line-height: 1.2; }
+    td.vote-cell { width: 1%; padding-left: 1rem; }
+    button:disabled { background: var(--ink); opacity: 0.45; cursor: default; }
+    #poll-table td { transition: background-color 0.4s; }
+    #poll-table td.just-updated { background: var(--butter); }
+
+    @media (prefers-reduced-motion: reduce) {
+      #poll-table td { transition: none; }
+    }
+
+    footer { background: var(--ink); color: var(--paper); padding: 2rem 0; }
+    footer a { color: var(--butter); }
+
+    @media (max-width: 760px) {
+      .hero .wrap { grid-template-columns: 1fr; gap: 2.5rem; padding-top: 3rem; padding-bottom: 3.5rem; }
+      .hero .die { grid-row: 2; justify-self: start; margin-left: 0.5rem; }
+      .demo { padding: 3rem 0; }
+      .demo .wrap { grid-template-columns: minmax(0, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div>
+        <h1>The server rolled this die.</h1>
+        <p>NebuliHost picked the number before the page left the server. Your browser only received the result, never the recipe that made it.</p>
+        <button type="button" id="roll">Roll again</button>
+      </div>
+      <div class="die" aria-label="Die showing the number rolled by the server">%{ roll_die() }%</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="demo">
+      <div class="wrap">
+        <div class="intro">
+          <h2>Filled in before the page is sent</h2>
+          <p>A tag in the page is replaced by its recipe's result. The page usually keeps that result until you change it, but this one rolls a die and uses storage, so it renders again on every view.</p>
+        </div>
+        <pre><code>&lt;p&gt;&#37;{ with_tax(10) }&#37;&lt;/p&gt;
+&lt;p&gt;&#37;{ with_tax(25) }&#37;&lt;/p&gt;
+&lt;p&gt;&#37;{ with_tax(99) }&#37;&lt;/p&gt;</code></pre>
+        <table>
+          <caption hidden>Net prices with 19% tax added by the server</caption>
+          <tr><th scope="row">10 € net</th><td>%{ with_tax(10) }%</td></tr>
+          <tr><th scope="row">25 € net</th><td>%{ with_tax(25) }%</td></tr>
+          <tr><th scope="row">99 € net</th><td>%{ with_tax(99) }%</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section class="demo">
+      <div class="wrap">
+        <div class="intro">
+          <h2>Worked out when you click</h2>
+          <p>JavaScript can call a recipe like a normal function. The browser waits for the answer, which is fine for a single click.</p>
+        </div>
+        <pre><code>try {
+  out.textContent = &#37;with_tax&#37;(net);
+} catch (error) {
+  out.textContent = error.message;
+}</code></pre>
+        <form id="tax-form" novalidate>
+          <label for="net">Net price in €</label>
+          <div class="field-row">
+            <input id="net" type="number" step="any" value="10">
+            <button type="submit">Add tax</button>
+          </div>
+          <p class="hint">Try &minus;5 to see the recipe refuse it. Its parameter only accepts 0 to 1,000,000.</p>
+          <output class="answer" id="tax-out" for="net" style="display:block"></output>
+        </form>
+      </div>
+    </section>
+
+    <section class="demo">
+      <div class="wrap">
+        <div class="intro">
+          <h2>Worked out while you type</h2>
+          <p>Add a <code>#</code> and the call returns a Promise, so the page keeps responding. Waiting for a short pause in typing also stays well inside the limit of 120 calls a minute.</p>
+        </div>
+        <pre><code>const stats = await &#37;#text_stats&#37;(text);
+characters.textContent = stats.characters;
+shouted.textContent = stats.shouted;
+fingerprint.textContent = stats.fingerprint;</code></pre>
+        <div>
+          <label for="text">Your text</label>
+          <textarea id="text" rows="2" maxlength="500">Hello from the server</textarea>
+          <p class="answer is-error" id="text-error" role="alert" hidden></p>
+          <dl id="text-result" aria-live="polite">
+            <dt>Characters</dt><dd id="characters"></dd>
+            <dt>In capitals</dt><dd id="shouted"></dd>
+            <dt>SHA-256 fingerprint</dt><dd id="fingerprint"></dd>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo">
+      <div class="wrap">
+        <div class="intro">
+          <h2>Remembered between visits</h2>
+          <p>Each site has its own storage, shared by every visitor. Add <code>| poll(5)</code> to a tag and its value refreshes every 5 seconds, so these numbers change without a reload. Open the page in a second tab and vote there to watch it happen.</p>
+        </div>
+        <pre><code>&lt;!-- Counts this view. Hidden, because a recipe
+     that stores something can't be polled --&gt;
+&lt;span hidden&gt;&#37;{ page_views() }&#37;&lt;/span&gt;
+
+&lt;!-- Read-only recipes, kept up to date --&gt;
+&#37;{ views_count() | poll(5) }&#37;
+&#37;{ poll_count("on_click") | poll(5) }&#37;
+
+// Saves a vote and returns the new total
+const total = await &#37;#poll_vote&#37;(option);
+
+// Runs when a polled value changes
+table.addEventListener("nh:update", flash);</code></pre>
+        <div>
+          <span hidden>%{ page_views() }%</span>
+          <p class="answer" id="views">%{ views_count() | poll(5) }%</p>
+          <p class="hint">views of this page so far</p>
+
+          <h3 id="poll-question">Which way of using a recipe would you try first?</h3>
+          <table id="poll-table" aria-labelledby="poll-question">
+            <tr>
+              <th scope="row">Filled in before sending</th>
+              <td>%{ poll_count("before_send") | poll(5) }%</td>
+              <td class="vote-cell"><button type="button" class="vote" data-option="before_send">Vote</button></td>
+            </tr>
+            <tr>
+              <th scope="row">Worked out on click</th>
+              <td>%{ poll_count("on_click") | poll(5) }%</td>
+              <td class="vote-cell"><button type="button" class="vote" data-option="on_click">Vote</button></td>
+            </tr>
+            <tr>
+              <th scope="row">Worked out while typing</th>
+              <td>%{ poll_count("while_typing") | poll(5) }%</td>
+              <td class="vote-cell"><button type="button" class="vote" data-option="while_typing">Vote</button></td>
+            </tr>
+          </table>
+          <p class="hint" id="poll-status" role="status">Recipes can't tell visitors apart, so reloading lets you vote again.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Built with <code>.chtml</code> and seven recipes. Read the <a href="https://hosting.thehsi.cloud/docs/pages">dynamic pages docs</a> to make your own.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("roll").addEventListener("click", () => location.reload());
+
+    // Render time: inside a script, the tag becomes a JavaScript string.
+    const taxOut = document.getElementById("tax-out");
+    taxOut.textContent = %{ with_tax(10) }%;
+
+    // Blocking call, on click.
+    document.getElementById("tax-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const net = Number(document.getElementById("net").value);
+      try {
+        taxOut.textContent = %with_tax%(net);
+        taxOut.classList.remove("is-error");
+      } catch (error) {
+        taxOut.textContent = error.message;
+        taxOut.classList.add("is-error");
+      }
+    });
+
+    // Non-blocking call, after a pause in typing.
+    const textInput = document.getElementById("text");
+    const textError = document.getElementById("text-error");
+    const textResult = document.getElementById("text-result");
+    let pause;
+    let latestRequest = 0;
+
+    async function describeText() {
+      const request = ++latestRequest;
+      try {
+        const stats = await %#text_stats%(textInput.value);
+        if (request !== latestRequest) return; // A newer request has replaced this one.
+        document.getElementById("characters").textContent = stats.characters;
+        document.getElementById("shouted").textContent = stats.shouted;
+        document.getElementById("fingerprint").textContent = stats.fingerprint;
+        textError.hidden = true;
+        textResult.hidden = false;
+      } catch (error) {
+        if (request !== latestRequest) return;
+        textError.textContent = error.message;
+        textError.hidden = false;
+        textResult.hidden = true;
+      }
+    }
+
+    textInput.addEventListener("input", () => {
+      clearTimeout(pause);
+      pause = setTimeout(describeText, 300);
+    });
+
+    describeText();
+
+    // Storage: the recipe saves the vote and returns the new total.
+    // The table itself is left to the polled tags, which catch up on their own.
+    const voteButtons = document.querySelectorAll(".vote");
+    const pollStatus = document.getElementById("poll-status");
+    const pollTable = document.getElementById("poll-table");
+
+    pollTable.addEventListener("nh:update", (event) => {
+      const cell = event.target.closest("td");
+      cell.classList.add("just-updated");
+      setTimeout(() => cell.classList.remove("just-updated"), 900);
+    });
+
+    voteButtons.forEach((button) => {
+      button.addEventListener("click", async () => {
+        const option = button.dataset.option;
+        voteButtons.forEach((other) => { other.disabled = true; });
+        try {
+          const total = await %#poll_vote%(option);
+          pollStatus.textContent = "Vote saved. That option now has " + total + (total === 1 ? " vote." : " votes.") + " The table updates within a few seconds.";
+        } catch (error) {
+          pollStatus.textContent = error.message;
+          voteButtons.forEach((other) => { other.disabled = false; });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

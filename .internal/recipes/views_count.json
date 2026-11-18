@@ -1,0 +1,8 @@
+{
+  "name": "Read the page view total",
+  "start": "read",
+  "nodes": {
+    "read": { "action": "storage_get", "values": ["page_views"], "default": 0, "result": "total" }
+  },
+  "result": "$total"
+}

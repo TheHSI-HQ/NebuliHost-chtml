@@ -1,0 +1,10 @@
+{
+  "name": "Add a vote to one poll option",
+  "parameters": { "option": "string[before_send|on_click|while_typing]" },
+  "start": "vote",
+  "nodes": {
+    "key": { "action": "format", "format": "poll_%(option)", "result": "poll_key" },
+    "vote": { "action": "storage_increment", "values": ["$poll_key"], "result": "votes" }
+  },
+  "result": "$votes"
+}

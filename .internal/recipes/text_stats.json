@@ -1,0 +1,14 @@
+{
+  "name": "Describe a piece of text",
+  "parameters": { "text": "string" },
+  "recipe": [
+    { "action": "length", "values": ["$text"], "result": "characters" },
+    { "action": "upper", "values": ["$text"], "result": "shouted" },
+    { "action": "sha256", "values": ["$text"], "result": "fingerprint" }
+  ],
+  "result": {
+    "characters": "$characters",
+    "shouted": "$shouted",
+    "fingerprint": "$fingerprint"
+  }
+}
