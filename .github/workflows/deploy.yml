@@ -1,0 +1,85 @@
+name: Deploy to NebuliHost
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy to NebuliHost
+        env:
+          NEBULIHOST_API_KEY: ${{ secrets.NEBULIHOST_API_KEY }}
+          SERVER_ID: chtml
+        run: |
+          python3 <<'PY'
+          import os
+          import urllib.request
+          import urllib.parse
+
+          API = "https://hosting.thehsi.cloud/api/v1"
+          SERVER = os.environ["SERVER_ID"]
+          TOKEN = os.environ["NEBULIHOST_API_KEY"]
+
+          EXCLUDED_DIRS = {".git", ".github"}
+
+          EXCLUDED_FILES = {
+              ".internal/storage.json",
+              ".internal/storage.json.lock",
+          }
+
+          for root, dirs, files in os.walk("."):
+              dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
+
+              for filename in files:
+                  filepath = os.path.join(root, filename)
+
+                  if os.path.islink(filepath):
+                      continue
+
+                  relative_path = os.path.relpath(filepath, ".")
+
+                  if relative_path in EXCLUDED_FILES:
+                      continue
+
+                  encoded_path = urllib.parse.quote(relative_path, safe="/")
+                  url = f"{API}/servers/{SERVER}/files/{encoded_path}"
+
+                  with open(filepath, "rb") as f:
+                      data = f.read()
+
+                  request = urllib.request.Request(
+                      url,
+                      data=data,
+                      method="PUT",
+                      headers={
+                          "Authorization": f"Bearer {TOKEN}",
+                          "Content-Type": "application/octet-stream",
+                      },
+                  )
+
+                  print(f"Uploading: {relative_path}")
+
+                  try:
+                      with urllib.request.urlopen(request) as response:
+                          if response.status not in (200, 201):
+                              raise RuntimeError(
+                                  f"Unexpected HTTP status: {response.status}"
+                              )
+                  except Exception as e:
+                      raise RuntimeError(
+                          f"Failed to upload {relative_path}: {e}"
+                      ) from e
+
+          print("Deployment completed successfully.")
+          PY
+
